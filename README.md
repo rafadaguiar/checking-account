@@ -1,2 +1,2 @@
-# checking_account
-A checking account API following FP
+# checking-account
+A checking account API following functional programming principles
