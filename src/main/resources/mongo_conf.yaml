@@ -4,10 +4,3 @@ development:
   collections:
     accounts: "accounts"
     operations: "operations"
-
-production:
-  mongo_uri: "mongodb://localhost"
-  database_name: "checking_account"
-  collections:
-    accounts: "accounts"
-    operations: "operations"
