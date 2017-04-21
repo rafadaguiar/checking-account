@@ -6,8 +6,8 @@ development:
     operations: "operations"
 
 production:
-  mongo_uri: "mongodb://localhost"
-  database_name: "checking_account"
+  mongo_uri: "mongodb://<dbuser>:<dbpassword>@ds145395.mlab.com:45395/heroku_5mnlcpr7"
+  database_name: "heroku_5mnlcpr7"
   collections:
     accounts: "accounts"
     operations: "operations"

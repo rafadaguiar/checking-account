@@ -5,6 +5,7 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.1",
     version := "0.1.0-SNAPSHOT"
   )
+  .enablePlugins(JavaAppPackaging)
 
 libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-blaze-server" % "0.17.0-M1",
