@@ -9,6 +9,8 @@ import io.circe.optics.JsonPath._
 import org.bson.types.ObjectId
 import org.mongodb.scala.bson._
 
+import scala.util.Try
+
 trait CheckingAccountMongoDAO extends CheckingAccountBaseDAO with MongoDBBaseDAO {
   val ACCOUNTS = root.collections.accounts.string.getOption(conf).get
   private val accountsCollection = db.getCollection(ACCOUNTS)
@@ -25,16 +27,16 @@ trait CheckingAccountMongoDAO extends CheckingAccountBaseDAO with MongoDBBaseDAO
     CheckingAccount(id.toString, createdAt)
   }
 
-  override def findAccount(accountId: String): CheckingAccount = {
-    val id = new ObjectId(accountId)
+  override def findAccount(accountId: String): Option[CheckingAccount] = {
+    val id = Try(new ObjectId(accountId)).toOption
+    if (id.isDefined) findAccountOrNone(id.get) else None
+  }
+
+  private def findAccountOrNone(id: ObjectId): Option[CheckingAccount] = {
     val accountDocument = accountsCollection.find(
-      Document(
-        CheckingAccountFields.ID -> id
-      )
-    ).results().head
-    CheckingAccount(
-      accountDocument.getObjectId(CheckingAccountFields.ID).toString,
-      accountDocument.getDate(CheckingAccountFields.CREATED_AT)
-    )
+      Document(CheckingAccountFields.ID -> id)
+    ).results().headOption
+
+    if (accountDocument.isDefined) Some(CheckingAccount.fromDocument(accountDocument.get)) else None
   }
 }

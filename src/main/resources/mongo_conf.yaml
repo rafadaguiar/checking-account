@@ -10,4 +10,3 @@ production:
   database_name: "heroku_5mnlcpr7"
   collections:
     accounts: "accounts"
-    operations: "operations"
