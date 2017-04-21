@@ -25,16 +25,16 @@ trait CheckingAccountMongoDAO extends CheckingAccountBaseDAO with MongoDBBaseDAO
     CheckingAccount(id.toString, createdAt)
   }
 
-  override def findAccount(accountId: String): CheckingAccount = {
+  override def findAccount(accountId: String): Option[CheckingAccount] = {
     val id = new ObjectId(accountId)
-    val accountDocument = accountsCollection.find(
-      Document(
-        CheckingAccountFields.ID -> id
-      )
-    ).results().head
-    CheckingAccount(
-      accountDocument.getObjectId(CheckingAccountFields.ID).toString,
-      accountDocument.getDate(CheckingAccountFields.CREATED_AT)
-    )
+    val accountDocument = accountsCollection.find(Document(CheckingAccountFields.ID -> id))
+      .results().headOption
+
+    if (accountDocument.isDefined) {
+      val createdAt = accountDocument.get.getDate(CheckingAccountFields.CREATED_AT)
+      Some(CheckingAccount(id.toString, createdAt))
+    } else {
+      None
+    }
   }
 }
