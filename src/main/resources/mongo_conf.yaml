@@ -4,3 +4,9 @@ development:
   collections:
     accounts: "accounts"
     operations: "operations"
+
+production:
+  mongo_uri: "mongodb://<dbuser>:<dbpassword>@ds145395.mlab.com:45395/heroku_5mnlcpr7"
+  database_name: "heroku_5mnlcpr7"
+  collections:
+    accounts: "accounts"
