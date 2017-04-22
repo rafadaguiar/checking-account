@@ -13,7 +13,7 @@ class OperationsMongoDAOSuite extends FunSpec with Matchers with BeforeAndAfter 
     dropCollection(db, OPERATIONS)
   }
 
-  val account = new CheckingAccount("1" * 24, new Date)
+  val account = new CheckingAccount("2" * 24, new Date)
 
   val operationIds = List(
     new ObjectId().toString,

@@ -20,7 +20,7 @@ class MongoDBIntegrationSuite
 
   val operationIds = Seq.fill(7)(new ObjectId().toString)
 
-  before {
+  after {
     dropCollection(db, ACCOUNTS)
     dropCollection(db, OPERATIONS)
   }
