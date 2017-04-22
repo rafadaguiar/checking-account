@@ -14,7 +14,8 @@ trait CheckingAccountInternals {
   def getStatementsBetween(operations: List[Operation], start: LocalDate, end: LocalDate): List[Statement] = {
     getStatements(operations)
       .filter { statement =>
-        (statement.date.isEqual(start) || statement.date.isAfter(start)) && statement.date.isBefore(end)
+        (statement.date.isEqual(start) || statement.date.isAfter(start)) &&
+          (statement.date.isEqual(end) || statement.date.isBefore(end))
       }
   }
 

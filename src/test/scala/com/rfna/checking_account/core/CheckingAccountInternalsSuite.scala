@@ -69,7 +69,7 @@ class CheckingAccountInternalsSuite extends FunSpec with Matchers {
     )
 
     it("should return the correct number of days") {
-      val (start, end) = (LocalDate.of(2017, 4, 1), LocalDate.of(2017, 5, 4))
+      val (start, end) = (LocalDate.of(2017, 4, 1), LocalDate.of(2017, 5, 3))
       checkingAccount.getStatementsBetween(operations, start, end).length shouldBe 4
     }
 
@@ -80,18 +80,18 @@ class CheckingAccountInternalsSuite extends FunSpec with Matchers {
     }
 
     it("should return the correct balances per day") {
-      val (start, end) = (LocalDate.of(2017, 4, 1), LocalDate.of(2017, 5, 4))
+      val (start, end) = (LocalDate.of(2017, 4, 1), LocalDate.of(2017, 5, 3))
       val statements = checkingAccount.getStatementsBetween(operations, start, end)
       statements.map(_.balance) shouldBe List(100, -100, 100, 0)
     }
 
     it("should return an empty list if the interval doesn't match any records") {
-      val (start, end) = (LocalDate.of(2016, 4, 1), LocalDate.of(2016, 5, 4))
+      val (start, end) = (LocalDate.of(2016, 4, 1), LocalDate.of(2016, 5, 3))
       checkingAccount.getStatementsBetween(operations, start, end) shouldBe empty
     }
 
     it("should return an empty list if start is after the end") {
-      val (start, end) = (LocalDate.of(2017, 6, 1), LocalDate.of(2017, 5, 4))
+      val (start, end) = (LocalDate.of(2017, 6, 1), LocalDate.of(2017, 5, 3))
       checkingAccount.getStatementsBetween(operations, start, end) shouldBe empty
     }
 
