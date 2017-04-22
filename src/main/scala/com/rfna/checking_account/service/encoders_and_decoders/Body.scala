@@ -12,6 +12,7 @@ import io.circe.optics.JsonPath._
 import org.bson.types.ObjectId
 
 object Body {
+  val TWO_DECIMAL_PLACES = 2
   val dateParser = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy")
   implicit val encodeDate: Encoder[Date] = Encoder.encodeString.contramap[Date](_.toString)
   implicit val decodeDate: Decoder[Date] = Decoder.decodeString.emap { str =>
@@ -22,12 +23,12 @@ object Body {
     Either.catchNonFatal(LocalDate.parse(str)).leftMap(t => "unable to parse LocalDate")
   }
   implicit val encodeOperation: Encoder[Operation] = Encoder.instance[Operation] { op =>
-    json"""{ "description": ${op.operationType.toString.toLowerCase()}, "amount": ${op.amount}, "date": ${op.date} }"""
+    json"""{ "description": ${op.operationType.toString.toLowerCase()}, "amount": ${roundUp(op.amount)}, "date": ${op.date} }"""
   }
   implicit val decodeOperation: Decoder[Operation] = Decoder.instance[Operation] { c =>
     val json = c.focus.getOrElse(Json.Null)
     val description = OperationType.withName(root.description.string.getOption(json).get)
-    val amount = root.amount.double.getOption(json).get
+    val amount = roundUp(root.amount.bigDecimal.getOption(json).get)
     val date = LocalDate.parse(root.date.string.getOption(json).get)
 
     Either.catchNonFatal(Operation(new ObjectId().toString, description, amount, date))
@@ -35,8 +36,10 @@ object Body {
   }
   implicit val encodeDebt: Encoder[Debt] = Encoder.instance[Debt] { debt =>
     if (debt.end.isDefined)
-      json"""{ "start": ${debt.start}, "end": ${debt.end}, "amount": ${debt.amount} }"""
+      json"""{ "start": ${debt.start}, "end": ${debt.end}, "amount": ${roundUp(debt.amount)} }"""
     else
-      json"""{ "start": ${debt.start}, "amount": ${debt.amount} }"""
+      json"""{ "start": ${debt.start}, "amount": ${roundUp(debt.amount)} }"""
   }
+
+  def roundUp(number: BigDecimal) = number.setScale(TWO_DECIMAL_PLACES, BigDecimal.RoundingMode.UP)
 }

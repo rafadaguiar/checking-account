@@ -2,15 +2,15 @@ package com.rfna.checking_account.models
 
 sealed trait OperationType {
   val description: String
-  val value: Double
+  val value: BigDecimal
 }
 
 sealed trait AdditiveOperation extends OperationType {
-  override val value: Double = +1.0
+  override val value: BigDecimal = +1.0
 }
 
 sealed trait SubtractiveOperation extends OperationType {
-  override val value: Double = -1.0
+  override val value: BigDecimal = -1.0
 }
 
 object OperationType {

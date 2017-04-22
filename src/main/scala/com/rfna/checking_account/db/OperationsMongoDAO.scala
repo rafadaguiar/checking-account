@@ -7,7 +7,7 @@ import com.rfna.checking_account.db.fields.OperationFields
 import com.rfna.checking_account.db.utils.MongoUtils._
 import com.rfna.checking_account.models.{CheckingAccount, Operation, OperationType}
 import io.circe.optics.JsonPath._
-import org.mongodb.scala.bson.{Document, ObjectId}
+import org.mongodb.scala.bson.{BsonDecimal128, Document, ObjectId}
 import org.mongodb.scala.model.Filters._
 
 trait OperationsMongoDAO extends OperationsBaseDAO with MongoDBBaseDAO {
@@ -45,7 +45,7 @@ trait OperationsMongoDAO extends OperationsBaseDAO with MongoDBBaseDAO {
     val id = document.getObjectId(OperationFields.ID).toString
     val description = document.getString(OperationFields.DESCRIPTION)
     val operationType = OperationType.withName(description)
-    val amount = document.getDouble(OperationFields.AMOUNT)
+    val amount = document.get[BsonDecimal128](OperationFields.AMOUNT).get.getValue.bigDecimalValue()
     val date = document.getDate(OperationFields.DATE).toInstant.atZone(UTC_ZONE_ID).toLocalDate
     Operation(id, operationType = operationType, amount = amount, date = date)
   }
