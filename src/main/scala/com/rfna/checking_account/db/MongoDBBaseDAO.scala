@@ -17,7 +17,7 @@ trait MongoDBBaseDAO {
 
   private def getMongoUri(): String = {
     val mongoUri = root.mongo_uri.string.getOption(conf).get
-    if (Environment.getEnv() == "production") {
+    if (Environment.getEnv() == "production" || Environment.getEnv() == "ci") {
       val user = envOrNone("dbuser").get
       val password = envOrNone("dbpassword").get
       mongoUri.replaceFirst("<dbuser>", user).replaceFirst("<dbpassword>", password)

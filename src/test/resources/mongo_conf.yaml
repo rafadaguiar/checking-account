@@ -4,3 +4,10 @@ test:
   collections:
     accounts: "accounts"
     operations: "operations"
+
+ci:
+  mongo_uri: "mongodb://<dbuser>:<dbpassword>@ds145395.mlab.com:45395/heroku_5mnlcpr7"
+  database_name: "heroku_5mnlcpr7"
+  collections:
+    accounts: "accounts_test"
+    operations: "operations_test"
