@@ -1,13 +1,20 @@
 package com.rfna.checking_account.utils
 
-import org.mongodb.scala.{Completed, MongoDatabase}
 import com.rfna.checking_account.db.utils.MongoUtils._
+import org.mongodb.scala.bson.ObjectId
+import org.mongodb.scala.model.Filters._
+import org.mongodb.scala.{Completed, MongoDatabase}
 
 object MongoUtils {
-  def dropCollection(db: MongoDatabase, collectionName: String): Boolean = {
+  val ID = "_id"
+
+  def cleanInsertions[T](
+    db: MongoDatabase,
+    collectionName: String,
+    insertions: List[T]
+  )(getObjectId: T => ObjectId): Boolean = {
     db.getCollection(collectionName)
-      .drop()
-      .results()
-      .forall(_ == Completed())
+      .deleteMany(in(ID, insertions.map(getObjectId)))
+      .results().forall(_ == Completed())
   }
 }

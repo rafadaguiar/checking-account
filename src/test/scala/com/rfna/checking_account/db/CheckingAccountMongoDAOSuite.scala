@@ -1,17 +1,15 @@
 package com.rfna.checking_account.db
 
 import com.rfna.checking_account.utils.MongoUtils._
+import org.bson.types.ObjectId
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
 class CheckingAccountMongoDAOSuite extends FunSpec with Matchers with BeforeAndAfter with CheckingAccountMongoDAO {
-
-  after {
-    dropCollection(db, ACCOUNTS)
-  }
-
   describe("When inserting an account") {
     it("should successfully create an account") {
-      insertAccount() should not be null
+      val account = insertAccount()
+      account should not be null
+      cleanInsertions(db, collectionName = ACCOUNTS, insertions = List(account))(acc => new ObjectId(acc.id))
     }
   }
 
@@ -19,6 +17,7 @@ class CheckingAccountMongoDAOSuite extends FunSpec with Matchers with BeforeAndA
     it("should find it if it exists") {
       val account = insertAccount()
       findAccount(account.id) shouldBe Some(account)
+      cleanInsertions(db, collectionName = ACCOUNTS, insertions = List(account))(acc => new ObjectId(acc.id))
     }
 
     it("shouldn't raise exceptions when the account doesn't exists") {
@@ -31,6 +30,4 @@ class CheckingAccountMongoDAOSuite extends FunSpec with Matchers with BeforeAndA
       findAccount(invalidAccountId) shouldBe None
     }
   }
-
-
 }
