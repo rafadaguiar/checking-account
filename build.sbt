@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-optics" % "0.7.1",
   "io.circe" %% "circe-yaml" % "0.5.0",
   "org.mongodb.scala" %% "mongo-scala-driver" % "2.0.0",
+  "io.netty" % "netty-all" % "4.1.9.Final",
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
   "ch.qos.logback" % "logback-classic" % "1.2.1"
 )
