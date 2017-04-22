@@ -1,13 +1,17 @@
 test:
-  mongo_uri: "mongodb://localhost"
-  database_name: "checking_account"
+  mongo_uri: mongodb://localhost
+  database_name: checking_account_test
   collections:
-    accounts: "accounts"
-    operations: "operations"
+    accounts: accounts
+    operations: operations
 
 ci:
-  mongo_uri: "mongodb://<dbuser>:<dbpassword>@ds145395.mlab.com:45395/heroku_5mnlcpr7"
-  database_name: "heroku_5mnlcpr7"
+  mongo_uri: mongodb://thepurpleone:<PASSWORD>@
+              atlas-shard-00-00-cemv7.mongodb.net:27017,
+              atlas-shard-00-01-cemv7.mongodb.net:27017,
+              atlas-shard-00-02-cemv7.mongodb.net:27017/
+              checking_account_ci_test?ssl=true&replicaSet=Atlas-shard-0&authSource=admin
+  database_name: checking_account_ci_test
   collections:
-    accounts: "accounts_test"
-    operations: "operations_test"
+    accounts: accounts
+    operations: operations
