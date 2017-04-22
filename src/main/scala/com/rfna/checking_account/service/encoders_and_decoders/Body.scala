@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.util.Date
 
 import cats.syntax.either._
-import com.rfna.checking_account.models.{Operation, OperationType}
+import com.rfna.checking_account.models.{Debt, Operation, OperationType}
 import io.circe._
 import io.circe.literal._
 import io.circe.optics.JsonPath._
@@ -22,7 +22,7 @@ object Body {
     Either.catchNonFatal(LocalDate.parse(str)).leftMap(t => "unable to parse LocalDate")
   }
   implicit val encodeOperation: Encoder[Operation] = Encoder.instance[Operation] { op =>
-    json"""{"description": ${op.operationType.toString.toLowerCase()}, "amount":${op.amount}, "date":${op.date}}"""
+    json"""{ "description": ${op.operationType.toString.toLowerCase()}, "amount": ${op.amount}, "date": ${op.date} }"""
   }
   implicit val decodeOperation: Decoder[Operation] = Decoder.instance[Operation] { c =>
     val json = c.focus.getOrElse(Json.Null)
@@ -32,5 +32,11 @@ object Body {
 
     Either.catchNonFatal(Operation(new ObjectId().toString, description, amount, date))
       .leftMap(t => DecodingFailure.fromThrowable(t, c.history))
+  }
+  implicit val encodeDebt: Encoder[Debt] = Encoder.instance[Debt] { debt =>
+    if (debt.end.isDefined)
+      json"""{ "start": ${debt.start}, "end": ${debt.end}, "amount": ${debt.amount} }"""
+    else
+      json"""{ "start": ${debt.start}, "amount": ${debt.amount} }"""
   }
 }
