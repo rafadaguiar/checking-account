@@ -6,19 +6,19 @@ import org.mongodb.scala.bson.ObjectId
 
 sealed trait BaseOperation {
   val operationType: OperationType
-  val amount: Double
+  val amount: BigDecimal
   val date: LocalDate
 
-  def value: Double = operationType.value * amount
+  def value: BigDecimal = operationType.value * amount
 }
 
-case class Operation(id: String, operationType: OperationType, amount: Double, date: LocalDate) extends BaseOperation
+case class Operation(id: String, operationType: OperationType, amount: BigDecimal, date: LocalDate) extends BaseOperation
 
 case class MongoDBOperation(
   id: ObjectId,
   accountId: ObjectId,
   operationType: OperationType,
-  amount: Double,
+  amount: BigDecimal,
   date: LocalDate
 ) extends BaseOperation {
 

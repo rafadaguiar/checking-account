@@ -8,7 +8,7 @@ import scala.annotation.tailrec
 
 trait CheckingAccountInternals {
   def getBalance(operations: List[Operation]): Balance = {
-    Balance(operations.foldLeft(0.0)(_ + _.value))
+    Balance(operations.foldLeft(BigDecimal.decimal(0.0))(_ + _.value))
   }
 
   def getStatementsBetween(operations: List[Operation], start: LocalDate, end: LocalDate): List[Statement] = {
@@ -50,7 +50,7 @@ trait CheckingAccountInternals {
     @tailrec
     def loop(
       operationsGroupedAndSortedByDay: List[(LocalDate, List[Operation])],
-      accBalance: Double,
+      accBalance: BigDecimal,
       statements: List[Statement]
     ): List[Statement] = operationsGroupedAndSortedByDay match {
       case Nil => statements
@@ -79,9 +79,9 @@ trait CheckingAccountInternals {
     if (start.isDefined) Debt(start.get.date, None, end.get.balance.abs) :: debts else debts
   }
 
-  private def foundADebtStart(balance: Double, start: Option[SimpleStatement]): Boolean = balance < 0 && start.isEmpty
+  private def foundADebtStart(balance: BigDecimal, start: Option[SimpleStatement]): Boolean = balance < 0 && start.isEmpty
 
-  private def debtContinued(balance: Double, start: Option[SimpleStatement]): Boolean = balance < 0 && start.isDefined
+  private def debtContinued(balance: BigDecimal, start: Option[SimpleStatement]): Boolean = balance < 0 && start.isDefined
 
-  private def debtCeased(balance: Double, start: Option[SimpleStatement]): Boolean = balance >= 0 && start.isDefined
+  private def debtCeased(balance: BigDecimal, start: Option[SimpleStatement]): Boolean = balance >= 0 && start.isDefined
 }
