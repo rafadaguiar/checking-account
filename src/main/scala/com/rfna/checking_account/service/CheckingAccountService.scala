@@ -8,7 +8,7 @@ import org.http4s.dsl._
 
 object CheckingAccountService extends CheckingAccountController {
   val service = HttpService {
-    case GET -> Root / ACCOUNT / CREATE => createAccount()
+    case POST -> Root / ACCOUNT / CREATE => createAccount()
 
     case GET -> Root / ACCOUNT / accountId => getAccount(accountId)
 
