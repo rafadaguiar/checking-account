@@ -1,5 +1,6 @@
-![CircleCI](https://circleci.com/gh/rafadaguiar/checking-account.svg?style=svg)
 # checking-account
+![CircleCI](https://circleci.com/gh/rafadaguiar/checking-account.svg?style=shield&circle-token=45b9344b3bba78e93fa0c72a2351537671b9e080)
+
 A checking account API following functional programming principles.
 
 ## How I approached the checking account problem
