@@ -1,4 +1,4 @@
-test:
+development:
   mongo_uri: mongodb://localhost
   database_name: checking_account_test
   collections:
