@@ -4,21 +4,24 @@ import java.time.ZoneId
 import java.util.Date
 
 import com.rfna.checking_account.db.fields.OperationFields
-import com.rfna.checking_account.db.utils.MongoUtils._
 import com.rfna.checking_account.models.{CheckingAccount, Operation, OperationType}
 import io.circe.optics.JsonPath._
 import org.mongodb.scala.bson.{BsonDecimal128, Document, ObjectId}
 import org.mongodb.scala.model.Filters._
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait OperationsMongoDAO extends OperationsBaseDAO with MongoDBBaseDAO {
   val OPERATIONS = root.collections.operations.string.getOption(conf).get
   private val operationsCollection = db.getCollection(OPERATIONS)
   private val UTC_ZONE_ID = ZoneId.of("UTC")
 
-  override def insertOperations(account: CheckingAccount, operations: List[Operation]): List[String] = {
+  override def insertOperations(account: CheckingAccount, operations: List[Operation])
+  : Future[List[String]] = {
     val (ids, documents) = operations.map(operation => toMongoDocument(account, operation)).unzip
-    operationsCollection.insertMany(documents).results()
-    ids.map(_.toString)
+    operationsCollection.insertMany(documents).toFuture()
+      .flatMap(_ => Future(ids.map(_.toString)))
   }
 
   private def toMongoDocument(account: CheckingAccount, operation: Operation): (ObjectId, Document) = {
@@ -33,12 +36,10 @@ trait OperationsMongoDAO extends OperationsBaseDAO with MongoDBBaseDAO {
     ))
   }
 
-  override def getOperations(account: CheckingAccount): List[Operation] = {
+  override def getOperations(account: CheckingAccount): Future[List[Operation]] = {
     operationsCollection
-      .find(equal(OperationFields.ACCOUNT_ID, new ObjectId(account.id)))
-      .results()
-      .map(fromMongoDocument)
-      .toList
+      .find(equal(OperationFields.ACCOUNT_ID, new ObjectId(account.id))).toFuture()
+      .flatMap(docs => Future(docs.map(fromMongoDocument).toList))
   }
 
   private def fromMongoDocument(document: Document): Operation = {
