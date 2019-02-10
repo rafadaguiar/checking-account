@@ -7,11 +7,8 @@ import org.bson.types.ObjectId
 
 
 object OperationFactory {
-  def buildPartialOperation(
-    operationType: OperationType,
-    amount: BigDecimal,
-    date: LocalDate
-  ): (ObjectId) => Operation = {
+  def buildPartialOperation(operationType: OperationType, amount: BigDecimal, date: LocalDate)
+  : ObjectId => Operation = {
     operationId: ObjectId => Operation(operationId.toString, operationType, amount, date)
   }
 }
