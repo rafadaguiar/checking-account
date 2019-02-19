@@ -6,9 +6,11 @@ import com.rfna.checking_account.core.CheckingAccountInternals
 import com.rfna.checking_account.db.{CheckingAccountMongoDAO, OperationsMongoDAO}
 import com.rfna.checking_account.factories.OperationFactory
 import com.rfna.checking_account.models._
-import com.rfna.checking_account.utils.MongoUtils._
+import com.rfna.checking_account.utils.MongoTestUtils._
 import org.bson.types.ObjectId
 import org.scalatest.{FunSpec, Matchers}
+
+import scala.concurrent.Await
 
 class MongoDBIntegrationSuite
   extends FunSpec
@@ -29,22 +31,23 @@ class MongoDBIntegrationSuite
 
   describe("When requesting the account balance") {
     it("should be able to get the operations from the database and return the right balance") {
-      val account = insertAccount()
+      val account = Await.result(insertAccount(), futureTimeout)
       val operations = partialOperations.map(operationWithoutId => operationWithoutId(new ObjectId))
-      insertOperations(account, operations)
-      getBalance(getOperations(account)) shouldBe Balance(-100.0)
+      Await.result(insertOperations(account, operations), futureTimeout)
+      getBalance(Await.result(getOperations(account), futureTimeout)) shouldBe Balance(-100.0)
       cleanCollections(account, operations)
     }
   }
 
   describe("When requesting the statements") {
     it("should be able to get the operations from the database and return the right statements") {
-      val account = insertAccount()
+      val account = Await.result(insertAccount(), futureTimeout)
       val operations = partialOperations.map(operationWithoutId => operationWithoutId(new ObjectId))
       val operationIds = operations.map(_.id)
-      insertOperations(account, operations)
+      Await.result(insertOperations(account, operations), futureTimeout)
       val (start, end) = (LocalDate.of(2017, 4, 1), LocalDate.of(2017, 4, 3))
-      getStatementsBetween(getOperations(account), start = start, end = end) shouldBe
+      val ops = Await.result(getOperations(account), futureTimeout)
+      getStatementsBetween(ops, start = start, end = end) shouldBe
         List(
           Statement(
             start,
@@ -70,10 +73,12 @@ class MongoDBIntegrationSuite
 
   describe("When requesting the periods of debt") {
     it("should be able to get the operations from the database and return the right periods of debt") {
-      val account = insertAccount()
+      val account = Await.result(insertAccount(), futureTimeout)
       val operations = partialOperations.map(operationWithoutId => operationWithoutId(new ObjectId))
-      insertOperations(account, operations)
-      getPeriodsOfDebt(getOperations(account)) shouldBe List(Debt(LocalDate.of(2017, 4, 4), None, amount = 100))
+      Await.result(insertOperations(account, operations), futureTimeout)
+      getPeriodsOfDebt(
+        Await.result(getOperations(account), futureTimeout)
+      ) shouldBe List(Debt(LocalDate.of(2017, 4, 4), None, amount = 100))
       cleanCollections(account, operations)
     }
   }

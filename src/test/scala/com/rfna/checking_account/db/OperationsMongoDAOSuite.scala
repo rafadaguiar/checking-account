@@ -4,13 +4,14 @@ import java.time.LocalDate
 import java.util.Date
 
 import com.rfna.checking_account.factories.OperationFactory
-import com.rfna.checking_account.models.{CheckingAccount, Operation, OperationType}
-import com.rfna.checking_account.utils.MongoUtils._
+import com.rfna.checking_account.models.{CheckingAccount, OperationType}
+import com.rfna.checking_account.utils.MongoTestUtils._
 import org.bson.types.ObjectId
-import org.scalatest.{BeforeAndAfter, BeforeAndAfterEach, FunSpec, Matchers}
+import org.scalatest.{BeforeAndAfterEach, FunSpec, Matchers}
+
+import scala.concurrent.Await
 
 class OperationsMongoDAOSuite extends FunSpec with Matchers with BeforeAndAfterEach with OperationsMongoDAO {
-
   val account = new CheckingAccount("2" * 24, new Date)
 
   val partialOperations = List(
@@ -27,7 +28,9 @@ class OperationsMongoDAOSuite extends FunSpec with Matchers with BeforeAndAfterE
     it("should successfully insert operations") {
       val operations = partialOperations.map(operationWithoutId => operationWithoutId(new ObjectId))
       val operationIds = operations.map(_.id)
-      insertOperations(account, operations) should contain theSameElementsAs operationIds
+      Await.result(
+        insertOperations(account, operations), futureTimeout
+      ) should contain theSameElementsAs operationIds
       cleanInsertions(db, collectionName = OPERATIONS, insertions = operations)(op => new ObjectId(op.id))
     }
   }
@@ -35,8 +38,9 @@ class OperationsMongoDAOSuite extends FunSpec with Matchers with BeforeAndAfterE
   describe("When performing reads") {
     it("should successfully get operations") {
       val operations = partialOperations.map(operationWithoutId => operationWithoutId(new ObjectId))
-      insertOperations(account, operations)
-      noException shouldBe thrownBy(getOperations(account))
+      Await.result(insertOperations(account, operations), futureTimeout)
+      Await.result(
+        getOperations(account), futureTimeout) should contain theSameElementsAs operations
       cleanInsertions(db, collectionName = OPERATIONS, insertions = operations)(op => new ObjectId(op.id))
     }
   }

@@ -13,46 +13,53 @@ import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
+
 trait CheckingAccountController extends
   CheckingAccountInternals with CheckingAccountMongoDAO with OperationsMongoDAO {
+  implicit val TASK_STRATEGY = fs2.Strategy.fromCachedDaemonPool()
 
-  def createAccount(): Task[Response] = Created(insertAccount().asJson)
+  def createAccount(): Task[Response] = {
+    Task.fromFuture(insertAccount())
+      .flatMap(acc => Created(acc.asJson))
+  }
 
   def getAccount(accountId: String): Task[Response] = {
-    doIfAccountIsDefined(accountId)(account => Ok(account.get.asJson))
+    doIfAccountIsDefined(accountId)(account => Ok(account.asJson))
   }
 
   def insertAccountOperations(accountId: String, request: Request): Task[Response] = {
     for {
       operations <- request.as(jsonOf[List[Operation]])
       response <- doIfAccountIsDefined(accountId) { account =>
-        Created(insertOperations(account.get, operations).asJson)
+        Created(insertOperations(account, operations).map(_.asJson))
       }
     } yield (response)
   }
 
-  def getAccountBalance(accountId: String) = {
+  def getAccountBalance(accountId: String): Task[Response] = {
     doIfAccountIsDefined(accountId) { account =>
-      Ok(getBalance(getOperations(account.get)).asJson)
+      Ok(getOperations(account).map(ops => getBalance(ops).asJson))
     }
   }
 
   def getAccountDebts(accountId: String): Task[Response] = {
     doIfAccountIsDefined(accountId) { account =>
-      Ok(getPeriodsOfDebt(getOperations(account.get)).asJson)
+      Ok(getOperations(account).map(ops => getPeriodsOfDebt(ops).asJson))
     }
   }
 
   def getAccountStatements(accountId: String, startDate: LocalDate, endDate: LocalDate)
-  :Task[Response] = {
+  : Task[Response] = {
     doIfAccountIsDefined(accountId) { account =>
-      Ok(getStatementsBetween(getOperations(account.get), startDate, endDate).asJson)
+      Ok(getOperations(account).map(ops => getStatementsBetween(ops, startDate, endDate).asJson))
     }
   }
 
-  private def doIfAccountIsDefined(accountId: String)(f: Option[CheckingAccount] => Task[Response])
+  private def doIfAccountIsDefined(accountId: String)(f: CheckingAccount => Task[Response])
   : Task[Response] = {
-    val account = findAccount(accountId)
-    if (account.isDefined) f(account) else NotFound(accountId)
+    Task.fromFuture(findAccount(accountId))
+      .flatMap(acc => if (acc.isDefined) f(acc.get) else NotFound(accountId))
   }
 }
