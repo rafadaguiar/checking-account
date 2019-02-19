@@ -1,7 +1,7 @@
 # checking-account
 ![CircleCI](https://circleci.com/gh/rafadaguiar/checking-account.svg?style=shield&circle-token=45b9344b3bba78e93fa0c72a2351537671b9e080)
 
-A checking account API following functional programming principles.
+A checking account REST API based on functional programming principles and an asynchronous web server.
 
 ## How I approached the checking account problem
 The first idea that comes to mind when trying to model a checking account is to have a balance variable that gets updated after each operation. To avoid racing conditions I moved away from this idea and implemented a checking account that instead uses a history of operations to track its current state.
