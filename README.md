@@ -20,13 +20,7 @@ The application is already deployed on heroku at [purple-banker](https://purple-
 You can also deploy this application locally by using the following commands:
 
 ```bash
-# If you don't have mongodb installed
-$ brew install mongo # version >= 3.4.x
-# if you don't have sbt installed
-$ brew install sbt
-```
-```bash
 $ git clone git@github.com:rafadaguiar/checking-account.git
 $ cd checking-account
-$ sbt run # sever will run on localhost:5000
+$ docker-compose up -d # The sever will run on localhost:5000
 ```
