@@ -1,0 +1,11 @@
+version: "3"
+services:
+  app:
+    image: rnascime/purple-banker
+    ports:
+    - "5000:5000"
+  db:
+    image: mongo:4.0.6
+    expose:
+    - "27017"
+
