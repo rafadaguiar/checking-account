@@ -14,7 +14,7 @@ Operations are registered to an account as they come, and whenever someone issue
 
 ### Heroku deployment
 
-The application is already deployed on heroku at [purple-banker](https://purple-banker.herokuapp.com), so you can point your test application directly to this url. Keep in mind that the server will have a cold start.
+The application is already deployed on heroku at [purple-banker](https://purple-banker.herokuapp.com), so you can easily play with it. Keep in mind that the server will have a cold start.
 
 ### Local deployment
 You can also deploy this application locally by using the following commands:
