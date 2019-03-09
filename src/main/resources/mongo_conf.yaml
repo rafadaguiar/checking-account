@@ -5,6 +5,13 @@ development:
     accounts: accounts
     operations: operations
 
+docker:
+  mongo_uri: mongodb://db
+  database_name: checking_account
+  collections:
+    accounts: accounts
+    operations: operations
+
 production:
   mongo_uri: mongodb://thepurpleone:<PASSWORD>@
               atlas-shard-00-00-cemv7.mongodb.net:27017,
